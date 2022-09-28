@@ -1,0 +1,23 @@
+* {
+  box-sizing: border-box;
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+
+  width: 960px;
+  height: 960px;
+  flex: 1 1 0;
+}
+
+.box {
+  width: 60px;
+  height: 60px;
+  background-color: rgb(255, 255, 255);
+  border: solid 1px black;
+}
+
+.box:hover {
+  background-color: rgb(199, 199, 199);
+}
