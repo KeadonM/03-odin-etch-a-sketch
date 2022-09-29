@@ -1,17 +1,51 @@
 * {
   box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  font-family: "Roboto";
+}
+
+/*Main Content*/
+.content {
+  display: flex;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0 12px;
+}
+
+button {
+  width: 80px;
+  height: 32px;
 }
 
 .grid {
   display: flex;
   flex-wrap: wrap;
 
-  width: 960px;
-  height: 960px;
+  width: 600px;
+  height: 600px;
+
+  box-shadow: 8px 8px 32px;
 }
 
 .box {
   flex: auto;
   background-color: rgb(255, 255, 255);
-  border: solid 1px black;
+}
+
+.box:hover {
+  scale: 1.15;
+  border: solid 2px rgb(50, 50, 50);
+  border-radius: 2px;
+}
+
+.grid-lines {
+  border: solid 1px rgb(50, 50, 50);
 }

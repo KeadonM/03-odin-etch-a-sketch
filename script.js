@@ -1,9 +1,9 @@
 const DEFAULT_GRID = 16;
 
-const gridButton = document.querySelector(".grid-button");
+const gridButton = document.querySelector("#new-grid");
 const gridContainer = document.querySelector(".grid-container");
 
-gridButton.addEventListener("click", () => promptNewGrid);
+gridButton.addEventListener("click", () => promptNewGrid());
 
 createGrid(DEFAULT_GRID);
 
@@ -31,8 +31,8 @@ function removeOldGrid() {
 
 function createBoxes(grid, gridSize) {
     size = grid.offsetWidth / gridSize + "px";
-    gridSize *= gridSize
-
+    console.log
+    gridSize *= gridSize;
     for (let i = 0; i < gridSize; i++) {
         let gridElement = document.createElement("div");
         gridElement.classList.add("box");
@@ -40,7 +40,6 @@ function createBoxes(grid, gridSize) {
         gridElement.style.width = size;
         gridElement.style.height = size;
         grid.appendChild(gridElement);
-
         gridElement.addEventListener("mouseover", e => eventHandler(e));
     }
 }
@@ -64,14 +63,14 @@ function darkenColorOnHover(gridElement) {
     }
 
     gridElement.style.backgroundColor = `rgb(${parseInt(values[0])}, 
-                                             ${parseInt(values[1])},
-                                             ${parseInt(values[2])})`;
+                                            ${parseInt(values[1])},
+                                            ${parseInt(values[2])})`;
 }
 
 function randomColorOnHover(gridElement) {
     gridElement.style.backgroundColor = `rgb(${getRandomValue()},
-                                             ${getRandomValue()},
-                                             ${getRandomValue()})`;
+                                            ${getRandomValue()},
+                                            ${getRandomValue()})`;
 }
 
 function getRandomValue() {
