@@ -1,17 +1,20 @@
+const DEFAULT_GRID = 16;
 
 const gridButton = document.querySelector(".grid-button");
-gridButton.addEventListener("click", () => {
+const gridContainer = document.querySelector(".grid-container");
+
+gridButton.addEventListener("click", () => promptNewGrid);
+
+createGrid(DEFAULT_GRID);
+
+function promptNewGrid() {
     let gridSize;
     do {
         gridSize = prompt("Enter a grid size below 100");
-    } while (gridSize > 100 && gridSize < 2);
+    } while (gridSize > 100 || gridSize < 2);
 
     createGrid(gridSize);
-});
-const gridContainer = document.querySelector(".grid-container");
-
-
-createGrid(15);
+}
 
 function createGrid(gridSize) {
     removeOldGrid();
@@ -38,30 +41,27 @@ function createBoxes(grid, gridSize) {
         gridElement.style.height = size;
         grid.appendChild(gridElement);
 
-        gridElement.addEventListener("mouseover", e => {
-            if (e.altKey && e.target.getAttribute("data-colored") === "false") {
-                randomColorOnHover(e.target);
-                e.target.setAttribute("data-colored", "true");
-            } else if (e.altKey) {
-                darkenColorOnHover(e.target);
-            }
-        });
+        gridElement.addEventListener("mouseover", e => eventHandler(e));
+    }
+}
+
+function eventHandler(e) {
+    if (e.altKey && e.target.getAttribute("data-colored") === "false") {
+        randomColorOnHover(e.target);
+        e.target.setAttribute("data-colored", "true");
+    } else if (e.altKey) {
+        darkenColorOnHover(e.target);
     }
 }
 
 function darkenColorOnHover(gridElement) {
     let currentColor = gridElement.style.backgroundColor;
     currentColor = currentColor.slice(4, currentColor.length - 1);
-
     let values = currentColor.split(",");
-
-    console.log(values);
 
     for (let i = 0; i < values.length; i++) {
         values[i] = parseInt(values[i]) * 0.9;
     }
-
-    console.log(values);
 
     gridElement.style.backgroundColor = `rgb(${parseInt(values[0])}, 
                                              ${parseInt(values[1])},
