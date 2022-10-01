@@ -1,3 +1,10 @@
+/*This Event Listener prevents a bug that interrupts drawing when the
+browser thinks a grid element is being dragged. This was the only solution
+I could find.*/
+document.addEventListener("dragstart", (e) => {
+  e.preventDefault();
+});
+
 const DEFAULT_GRID = 16;
 const DEFAULT_DRAW_MODE = "default";
 
