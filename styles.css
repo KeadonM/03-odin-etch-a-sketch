@@ -11,34 +11,41 @@
 }
 
 body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   font-family: "Roboto", sans-serif;
   background-color: var(--primary-light);
   height: 100vh;
 }
 
-/*Header*/
+/*---Header---*/
 .header {
   background-color: var(--primary-light);
 }
 
 #title {
   text-align: center;
-  padding: 32px;
+  padding: 48px;
   font-size: 72px;
   color: var(--primary-dark);
 }
 
-/*Main Content*/
+/*---Main Content---*/
 .content {
   display: flex;
   justify-content: center;
 }
 
+/*---Sidebar---*/
 .sidebar {
+  width: 120px;
+  height: 600px;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  margin: 0 16px;
+  margin: 0 48px;
+  padding: 12px 0;
 }
 
 .color-container {
@@ -52,6 +59,7 @@ body {
   appearance: none;
   width: 54px;
   height: 40px;
+  box-shadow: 4px 4px 8px var(--primary-dark);
   border-radius: 8px;
   background-color: transparent;
   border: none;
@@ -75,20 +83,6 @@ body {
 }
 
 .activeColor {
-  box-shadow: 4px 4px 8px var(--primary-dark);
-}
-
-button {
-  width: 120px;
-  height: 40px;
-  font-size: 16px;
-  color: var(--primary-dark);
-  background-color: var(--primary-light);
-  border: solid 2px var(--primary-dark);
-  border-radius: 6px;
-}
-
-button:hover {
   transition: 0.07s;
   scale: 1.1;
 }
@@ -137,6 +131,49 @@ input[type="range"] {
   background: var(--primary-dark);
 }
 
+#current-size {
+  text-align: center;
+}
+
+button {
+  width: 120px;
+  height: 40px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary-dark);
+  background-color: var(--primary-light);
+  border: solid 2px var(--primary-dark);
+  border-radius: 6px;
+}
+
+button:hover {
+  transition: 0.07s;
+  scale: 1.1;
+}
+
+#help {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  margin-top: auto;
+  border-width: 3px;
+  border-radius: 20px;
+
+  font-weight: bolder;
+  font-size: 18px;
+}
+
+#help:hover {
+  scale: 1.15;
+}
+
+.active {
+  transition: 0.07s;
+  color: var(--secondary-light);
+  background-color: var(--primary-dark);
+}
+
+/*---Grid---*/
 .grid {
   display: flex;
   flex-wrap: wrap;
@@ -156,6 +193,8 @@ input[type="range"] {
   scale: 1.15;
   box-shadow: 4px 4px 8px var(--primary-dark);
   border-radius: 4px;
+
+  cursor: crosshair;
 }
 
 .grid-lines {

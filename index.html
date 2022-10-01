@@ -12,9 +12,9 @@
     />
     <script src="script.js" defer></script>
   </head>
-  <body>
+  <body draggable="false">
     <div class="header">
-      <h1 id="title">Etch-a-Sketch</h1>
+      <h1 id="title">Etch-a-Pixel</h1>
     </div>
 
     <div class="content">
@@ -22,27 +22,34 @@
         <div class="color-container">
           <input
             id="primaryColor"
-            class="colorPicker activeColor"
+            class="colorPicker"
             type="color"
-            value="#000000"
+            value="#333333"
           />
           <input
             id="secondaryColor"
             class="colorPicker"
             type="color"
-            value="#ffffff"
+            value="#fafafa"
           />
         </div>
-        <button id="rainbow">Rainbow</button>
+        <div id="current-size">16 x 16</div>
+        <input id="size-selector" type="range" value="16" min="4" max="64" />
+        <button id="confetti">Confetti</button>
         <button id="eraser">Eraser</button>
         <button id="clear">Clear</button>
         <button id="grid-lines">Grid Lines</button>
-        <div>16 x 16</div>
-        <input id="grid-size" type="range" />
+        <button id="export">Export</button>
       </div>
-
-      <div class="grid-container" oncontextmenu="return false">
+      <div
+        class="grid-container"
+        oncontextmenu="return false"
+        draggable="false"
+      >
         <div class="grid"></div>
+      </div>
+      <div class="sidebar">
+        <button id="help">?</button>
       </div>
     </div>
   </body>
