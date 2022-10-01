@@ -1,20 +1,20 @@
 const DEFAULT_GRID = 16;
+const DEFAULT_DRAW_MODE = "default";
 
-const gridButton = document.querySelector("#new-grid");
+let mouseDown = false;
+let drawMode = DEFAULT_DRAW_MODE;
+
+const body = document.querySelector("body");
+body.addEventListener("mouseup", () => (mouseDown = false));
 const gridContainer = document.querySelector(".grid-container");
-
-gridButton.addEventListener("click", () => promptNewGrid());
-
 createGrid(DEFAULT_GRID);
 
-function promptNewGrid() {
-  let gridSize;
-  do {
-    gridSize = prompt("Enter a grid size below 100");
-  } while (gridSize > 100 || gridSize < 2);
-
-  createGrid(gridSize);
-}
+let primaryColor = "#000000";
+let secondaryColor = "#ffffff";
+let currentColor = primaryColor;
+const primaryColorPicker = document.querySelector("#primaryColor");
+const secondaryColorPicker = document.querySelector("#secondaryColor");
+addColorPickerEvents(primaryColorPicker, secondaryColorPicker);
 
 function createGrid(gridSize) {
   removeOldGrid();
@@ -25,13 +25,12 @@ function createGrid(gridSize) {
 }
 
 function removeOldGrid() {
-  let oldGrid = document.querySelector(".grid");
+  const oldGrid = document.querySelector(".grid");
   oldGrid.remove();
 }
 
 function createBoxes(grid, gridSize) {
   size = grid.offsetWidth / gridSize + "px";
-  console.log
   gridSize *= gridSize;
   for (let i = 0; i < gridSize; i++) {
     let gridElement = document.createElement("div");
@@ -40,39 +39,77 @@ function createBoxes(grid, gridSize) {
     gridElement.style.width = size;
     gridElement.style.height = size;
     grid.appendChild(gridElement);
-    gridElement.addEventListener("mouseover", e => eventHandler(e));
+    addGridElementEvents(gridElement);
   }
 }
 
-function eventHandler(e) {
-  if (e.altKey && e.target.getAttribute("data-colored") === "false") {
-    randomColorOnHover(e.target);
-    e.target.setAttribute("data-colored", "true");
-  } else if (e.altKey) {
-    darkenColorOnHover(e.target);
+function draw(gridElement) {
+  switch (drawMode) {
+    case "default":
+      gridElement.style.backgroundColor = currentColor;
+      break;
+
+    case "confetti":
+      confettiDraw(gridElement);
+      break;
+
+    case "eraser":
+      gridElement.style.backgroundColor = "#fafafa";
+      break;
   }
 }
 
-function darkenColorOnHover(gridElement) {
-  let currentColor = gridElement.style.backgroundColor;
-  currentColor = currentColor.slice(4, currentColor.length - 1);
-  let values = currentColor.split(",");
+function confettiDraw(gridElement) {
+  let color;
+  if (gridElement.getAttribute("data-colored") === "false") {
+    gridElement.setAttribute("data-colored", "true");
+    color = getConfettiColor();
+  } else {
+    color = getDarkenedColor(gridElement.style.backgroundColor);
+  }
+  gridElement.style.backgroundColor = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
+}
 
-  for (let i = 0; i < values.length; i++) {
-    values[i] = parseInt(values[i]) * 0.9;
+function getConfettiColor() {
+  let confettiColor = [];
+  for (let i = 0; i < 3; i++) {
+    confettiColor[i] = Math.floor(Math.random() * 180) + 75;
+  }
+  return confettiColor;
+}
+
+function getDarkenedColor(currentColor) {
+  currentColor = currentColor.slice(4, currentColor.length - 1).split(",");
+  let darkenedColor = [];
+  for (let i = 0; i < 3; i++) {
+    darkenedColor[i] = parseInt(currentColor[i]) * 0.5;
   }
 
-  gridElement.style.backgroundColor = `rgb(${parseInt(values[0])}, 
-                                            ${parseInt(values[1])},
-                                            ${parseInt(values[2])})`;
+  return darkenedColor;
 }
 
-function randomColorOnHover(gridElement) {
-  gridElement.style.backgroundColor = `rgb(${getRandomValue()},
-                                            ${getRandomValue()},
-                                            ${getRandomValue()})`;
+function addColorPickerEvents(primaryColorPicker, secondaryColorPicker) {
+  primaryColorPicker.addEventListener(
+    "input",
+    (e) => (primaryColor = e.target.value)
+  );
+  secondaryColorPicker.addEventListener(
+    "input",
+    (e) => (secondaryColor = e.target.value)
+  );
 }
 
-function getRandomValue() {
-  return Math.floor(Math.random() * 256);
+function addGridElementEvents(gridElement) {
+  gridElement.addEventListener("mousedown", (e) => {
+    if (e.button === 0) {
+      currentColor = primaryColor;
+    } else if (e.button === 2) {
+      currentColor = secondaryColor;
+    }
+    mouseDown = true;
+    draw(e.target);
+  });
+  gridElement.addEventListener("mouseover", (e) => {
+    if (mouseDown) draw(e.target);
+  });
 }
