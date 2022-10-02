@@ -40,15 +40,15 @@ function updateSizeText(size) {
 const eraserButton = document.querySelector("#eraser");
 const confettiButton = document.querySelector("#confetti");
 const invertButton = document.querySelector("#invert");
-const clearButton = document.querySelector("#clear");
 const gridLinesButton = document.querySelector("#grid-lines");
+const clearButton = document.querySelector("#clear");
 const exportButton = document.querySelector("#export");
 
 eraserButton.onclick = () => toggleEraser();
 confettiButton.onclick = () => changeDrawMode("confetti");
 invertButton.onclick = () => toggleInvert();
-clearButton.onclick = () => createGrid(currentSize);
 gridLinesButton.addEventListener("click", () => toggleGridLines());
+clearButton.onclick = () => createGrid(currentSize);
 
 function toggleActiveModeButton(mode) {
   switch (mode) {
