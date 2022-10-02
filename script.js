@@ -1,90 +1,190 @@
 /*This Event Listener prevents a bug that interrupts drawing when the
 browser thinks a grid element is being dragged. This was the only solution
 I could find.*/
-document.addEventListener("dragstart", (e) => {
-  e.preventDefault();
-});
+document.ondragstart = (e) => e.preventDefault();
 
-const DEFAULT_GRID = 16;
+/*Defaults*/
 const DEFAULT_DRAW_MODE = "default";
+const DEFAULT_GRID_SIZE = 16;
+const DEFAULT_PRIMARY_COLOR = "#333333";
+const DEFAULT_SECONDARY_COLOR = "#fafafa";
 
-let mouseDown = false;
 let drawMode = DEFAULT_DRAW_MODE;
-
-let primaryColor = "#333333";
-let secondaryColor = "#fafafa";
+let currentSize = DEFAULT_GRID_SIZE;
+let primaryColor = DEFAULT_PRIMARY_COLOR;
+let secondaryColor = DEFAULT_SECONDARY_COLOR;
+let eraserColor = DEFAULT_SECONDARY_COLOR;
 let currentColor = primaryColor;
+let mouseDown = false;
+
+/*---Color Pickers---*/
 const primaryColorPicker = document.querySelector("#primaryColor");
 const secondaryColorPicker = document.querySelector("#secondaryColor");
-addColorPickerEvents();
 
-const currentSize = document.querySelector("#current-size");
+primaryColorPicker.oninput = (e) => (primaryColor = e.target.value);
+secondaryColorPicker.oninput = (e) => (secondaryColor = e.target.value);
+
+/*---Slider---*/
+const currentSizeText = document.querySelector("#current-size");
 const sizeSelector = document.querySelector("#size-selector");
-addSizeEvents();
 
-const confettiButton = document.querySelector("#confetti");
+sizeSelector.onmousemove = (e) => updateSizeText(e.target.value);
+sizeSelector.onchange = (e) => createGrid(e.target.value);
+
+function updateSizeText(size) {
+  currentSize = size;
+  currentSizeText.textContent = `${size} x ${size}`;
+}
+
+/*---Buttons---*/
 const eraserButton = document.querySelector("#eraser");
+const confettiButton = document.querySelector("#confetti");
 const invertButton = document.querySelector("#invert");
 const clearButton = document.querySelector("#clear");
 const gridLinesButton = document.querySelector("#grid-lines");
 const exportButton = document.querySelector("#export");
-addButtonEvents();
 
-const body = document.querySelector("body");
-body.addEventListener("mouseup", () => {
-  mouseDown = false;
-  primaryColorPicker.classList.remove("activeColor");
-  secondaryColorPicker.classList.remove("activeColor");
-});
-const gridContainer = document.querySelector(".grid-container");
-createGrid(DEFAULT_GRID);
+eraserButton.onclick = () => toggleEraser();
+confettiButton.onclick = () => changeDrawMode("confetti");
+invertButton.onclick = () => toggleInvert();
+clearButton.onclick = () => createGrid(currentSize);
+gridLinesButton.addEventListener("click", () => toggleGridLines());
 
-function createGrid(gridSize) {
-  document.querySelector(".grid").remove();
-  grid = document.createElement("div");
-  grid.classList.add("grid");
-  gridContainer.appendChild(grid);
-  createBoxes(grid, gridSize);
-}
-
-function createBoxes(grid, gridSize) {
-  size = grid.offsetWidth / gridSize + "px";
-  gridSize *= gridSize;
-  for (let i = 0; i < gridSize; i++) {
-    let gridElement = document.createElement("div");
-    gridElement.classList.add("box");
-    if (gridLinesButton.classList.contains("active")) {
-      gridElement.classList.add("grid-lines");
-    }
-    gridElement.setAttribute("data-colored", "false");
-    gridElement.style.width = size;
-    gridElement.style.height = size;
-    grid.appendChild(gridElement);
-    addGridElementEvents(gridElement);
+function toggleActiveModeButton(mode) {
+  switch (mode) {
+    case "default":
+      confettiButton.classList.remove("active");
+      eraserButton.classList.remove("active");
+      break;
+    case "eraser":
+      eraserButton.classList.add("active");
+      confettiButton.classList.remove("active");
+      break;
+    case "confetti":
+      confettiButton.classList.add("active");
+      eraserButton.classList.remove("active");
+      break;
   }
 }
 
+function toggleGridLines() {
+  gridLinesButton.classList.toggle("active");
+  gridContainer.classList.toggle("grid-lines");
+  let boxes = document.querySelectorAll(".box");
+  for (let i = 0; i < boxes.length; i++) {
+    boxes[i].classList.toggle("grid-lines");
+  }
+}
+
+function toggleInvert() {
+  document.querySelector(".grid").classList.toggle("invert");
+  invertButton.classList.toggle("active");
+}
+
+/*Grid*/
+
+const body = document.querySelector("body");
+const gridContainer = document.querySelector(".grid-container");
+createGrid(currentSize);
+
+function createGrid(gridWidth) {
+  document.querySelector(".grid").remove();
+  const grid = document.createElement("div");
+  grid.classList.add("grid");
+  gridContainer.appendChild(grid);
+  populateGrid(grid, gridWidth);
+}
+
+function populateGrid(grid, gridWidth) {
+  const elementSize = grid.offsetWidth / gridWidth + "px";
+  const totalElements = gridWidth * gridWidth;
+  const gridLines = gridLinesButton.classList.contains("active");
+
+  for (let i = 0; i < totalElements; i++) {
+    const gridElement = document.createElement("div");
+    gridElement.style.width = elementSize;
+    gridElement.style.height = elementSize;
+    gridElement.classList.add("box");
+    gridElement.setAttribute("data-confetti", "false");
+    if (gridLines) gridElement.classList.add("grid-lines");
+    grid.appendChild(gridElement);
+    gridElement.onmousedown = (e) => elementTouched(e);
+    gridElement.onmouseover = (e) => draw(e.target);
+  }
+}
+
+function elementTouched(e) {
+  if (e.button === 1 && !eraserButton.classList.contains("active")) {
+    toggleEraser();
+  } else if (e.button === 2) {
+    activeColorToggle(secondaryColor, secondaryColorPicker);
+  } else {
+    activeColorToggle(primaryColor, primaryColorPicker);
+  }
+
+  mouseDown = true;
+  draw(e.target);
+}
+
+function activeColorToggle(color, activeColor) {
+  if (eraserButton.classList.contains("active")) return;
+  currentColor = color;
+  deactivateColorPickers();
+  activeColor.classList.add("active-color");
+}
+
+function deactivateColorPickers() {
+  primaryColorPicker.classList.remove("active-color");
+  secondaryColorPicker.classList.remove("active-color");
+}
+
+function toggleEraser() {
+  eraserButton.classList.toggle("active");
+  changeDrawMode("eraser");
+  deactivateColorPickers();
+}
+
+body.addEventListener("mouseup", (e) => {
+  if (e.button === 1) {
+    toggleEraser();
+  }
+  deactivateColorPickers();
+  mouseDown = false;
+});
+
+/*Draw*/
+function changeDrawMode(mode) {
+  if (drawMode === mode) {
+    mode = "default";
+  }
+  drawMode = mode;
+  toggleActiveModeButton(mode);
+}
+
 function draw(gridElement) {
+  if (!mouseDown) return;
+
   switch (drawMode) {
     case "default":
+      gridElement.setAttribute("data-confetti", "false");
       gridElement.style.backgroundColor = currentColor;
+      break;
+
+    case "eraser":
+      gridElement.setAttribute("data-confetti", "false");
+      gridElement.style.backgroundColor = eraserColor;
       break;
 
     case "confetti":
       confettiDraw(gridElement);
-      break;
-
-    case "eraser":
-      gridElement.setAttribute("data-colored", "false");
-      gridElement.style.backgroundColor = "#fafafa";
       break;
   }
 }
 
 function confettiDraw(gridElement) {
   let color;
-  if (gridElement.getAttribute("data-colored") === "false") {
-    gridElement.setAttribute("data-colored", "true");
+  if (gridElement.getAttribute("data-confetti") === "false") {
+    gridElement.setAttribute("data-confetti", "true");
     color = getConfettiColor();
   } else {
     color = getDarkenedColor(gridElement.style.backgroundColor);
@@ -106,96 +206,5 @@ function getDarkenedColor(currentColor) {
   for (let i = 0; i < 3; i++) {
     darkenedColor[i] = parseInt(currentColor[i]) * 0.5;
   }
-
   return darkenedColor;
-}
-
-function toggleGridLines() {
-  gridLinesButton.classList.toggle("active");
-  gridContainer.classList.toggle("grid-lines");
-  let boxes = document.querySelectorAll(".box");
-  for (let i = 0; i < boxes.length; i++) {
-    console.log(boxes[i]);
-    boxes[i].classList.toggle("grid-lines");
-  }
-}
-
-function addColorPickerEvents() {
-  primaryColorPicker.addEventListener(
-    "input",
-    (e) => (primaryColor = e.target.value)
-  );
-  secondaryColorPicker.addEventListener(
-    "input",
-    (e) => (secondaryColor = e.target.value)
-  );
-}
-
-function addButtonEvents() {
-  confettiButton.addEventListener("click", () => {
-    console.log(drawMode);
-    if (drawMode != "confetti") {
-      drawMode = "confetti";
-      confettiButton.classList.add("active");
-      eraserButton.classList.remove("active");
-    } else {
-      drawMode = "default";
-      confettiButton.classList.remove("active");
-    }
-  });
-  eraserButton.addEventListener("click", () => {
-    if (drawMode != "eraser") {
-      drawMode = "eraser";
-      eraserButton.classList.toggle("active");
-      confettiButton.classList.remove("active");
-    } else {
-      drawMode = "default";
-      eraserButton.classList.remove("active");
-    }
-  });
-  invertButton.addEventListener("click", () => {
-    document.querySelector(".grid").classList.toggle("invert");
-    invertButton.classList.toggle("active");
-  });
-  clearButton.addEventListener("click", () => {
-    document.querySelector(".grid").classList.remove("invert");
-    invertButton.classList.remove("active");
-    createGrid(DEFAULT_GRID);
-  });
-  gridLinesButton.addEventListener("click", () => toggleGridLines());
-}
-
-function addSizeEvents() {
-  sizeSelector.addEventListener(
-    "mousemove",
-    (e) => (currentSize.textContent = `${e.target.value} x ${e.target.value}`)
-  );
-  sizeSelector.addEventListener("change", (e) => createGrid(e.target.value));
-}
-
-function addGridElementEvents(gridElement) {
-  gridElement.addEventListener("mouseup", () => {
-    mouseDown = false;
-    primaryColorPicker.classList.remove("activeColor");
-    secondaryColorPicker.classList.remove("activeColor");
-  });
-  gridElement.addEventListener("mousedown", (e) => {
-    if (e.button === 0) {
-      currentColor = primaryColor;
-      primaryColorPicker.classList.add("activeColor");
-      secondaryColorPicker.classList.remove("activeColor");
-    } else if (e.button === 2) {
-      currentColor = secondaryColor;
-      primaryColorPicker.classList.remove("activeColor");
-      secondaryColorPicker.classList.add("activeColor");
-    }
-
-    if (e.button === 0 || e.button === 2) {
-      mouseDown = true;
-      draw(e.target);
-    }
-  });
-  gridElement.addEventListener("mouseover", (e) => {
-    if (mouseDown) draw(e.target);
-  });
 }
