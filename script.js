@@ -208,5 +208,3 @@ function getDarkenedColor(currentColor) {
   }
   return darkenedColor;
 }
-
-function test() {}
