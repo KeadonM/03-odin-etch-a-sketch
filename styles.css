@@ -20,7 +20,7 @@ body {
   user-select: none;
 }
 
-/*---Header---*/
+/*---HEADER---*/
 .header {
   background-color: var(--primary-light);
 }
@@ -30,6 +30,32 @@ body {
   padding: 48px;
   font-size: 72px;
   color: var(--primary-dark);
+}
+
+/*---FOOOTER---*/
+
+footer {
+  margin-top: auto;
+  margin-bottom: 24px;
+}
+
+#copyright {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+  text-decoration-line: none;
+  letter-spacing: 0.5px;
+}
+
+.fa-github {
+  margin-left: 4px;
+  color: var(--primary-dark);
+  font-size: 24px;
+  transition: transform 0.4s ease-in-out;
+}
+
+.fa-github:hover {
+  transform: rotate(360deg) scale(1.2);
 }
 
 /*---Main Content---*/

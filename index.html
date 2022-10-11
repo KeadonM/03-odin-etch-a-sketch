@@ -10,6 +10,10 @@
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
       rel="stylesheet"
     />
+    <script
+      src="https://kit.fontawesome.com/7881ce7c0a.js"
+      crossorigin="anonymous"
+    ></script>
     <script src="script.js" defer></script>
   </head>
   <body oncontextmenu="return false">
@@ -17,7 +21,7 @@
       <h1 id="title">Etch-a-Pixel</h1>
     </div>
 
-    <div class="content">
+    <main class="content">
       <div class="sidebar">
         <div class="color-container">
           <input
@@ -47,6 +51,17 @@
       <div class="sidebar">
         <button id="help">?</button>
       </div>
-    </div>
+    </main>
+
+    <footer>
+      <a id="copyright" href="https://github.com/keadonm" target="_blank">
+        Copyright ©
+        <script>
+          document.write(new Date().getFullYear());
+        </script>
+        KeadonM
+        <i class="fab fa-github"></i>
+      </a>
+    </footer>
   </body>
 </html>
