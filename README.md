@@ -6,7 +6,7 @@ I deviated slightly from the initial project which was meant to more closely mim
 
 This was an [assignment](https://www.theodinproject.com/lessons/foundations-etch-a-sketch) from The Odin Project.
 
-**Live 👉** [here](https://keadonm.github.io/04-odin-etch-a-sketch/)
+**Live 👉** [here](https://keadonm.github.io/03-odin-etch-a-sketch/)
 
 ## Built Using
 
